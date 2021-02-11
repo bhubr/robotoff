@@ -3,19 +3,29 @@ version: '3'
 services:
   api:
     restart: always
-    image: openfoodfacts/robotoff
+    # Commented out: rebuild local image, based on the
+    # code in the repo tree, instead of using Docker Hub image
+    # image: openfoodfacts/robotoff
     network_mode: "host"
+    build: .
     volumes:
       - api-dataset:/opt/robotoff/datasets
       - ./tf_models:/opt/robotoff/tf_models:Z
       - ./models:/opt/robotoff/models:Z
+    # For this to work, there needs to be a .env at the root of the repo,
+    # containing:
+    # MONGO_URI=mongodb://mongo-db-host.domain:27017/
+    environment:
+      - MONGO_URI=${MONGO_URI}
     mem_limit: 2g
     ports:
       - "5500:5500"
 
   workers:
     restart: always
-    image: openfoodfacts/robotoff
+    # Same as above: use local code instead of Docker Hub image
+    # image: openfoodfacts/robotoff
+    build: .
     volumes:
       - api-dataset:/opt/robotoff/datasets
       - ./tf_models:/opt/robotoff/tf_models:Z
@@ -24,7 +34,9 @@ services:
     mem_limit: 8g
 
   scheduler:
-    image: openfoodfacts/robotoff
+    # Same as above: use local code
+    # image: openfoodfacts/robotoff
+    build: .
     volumes:
       - api-dataset:/opt/robotoff/datasets
       - ./tf_models:/opt/robotoff/tf_models:Z
